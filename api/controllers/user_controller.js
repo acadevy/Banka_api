@@ -47,8 +47,28 @@ exports.get_a_user = async(req,res) => {
         try {
         const user = await User.findById(id);
         res.status(200).json({user});
-
-     }catch(err){
+        }catch(err){
             res.status(404).json({message: "User does not exist"});
         }
 }
+
+exports.update_user = async(req,res) =>{
+
+        const updates = Object.keys(req.body);
+        const allowedUpdates = ['name', 'email', 'password'];
+        const isValidOperation = updates.every(update =>
+          allowedUpdates.includes(update)
+        );
+        if (!isValidOperation) {
+          return res.status(400).send({ error: 'Invalid updates!' });
+        }
+        try {
+            const user = await User.findOne({_id: req.user._id});
+            updates.forEach(update => (user[update] = req.body[update]));
+            await user.save();
+            res.status(200).send(user);
+          } catch (error) {
+            res.status(400).send(error);
+          }
+               
+};
