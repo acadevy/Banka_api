@@ -25,30 +25,30 @@ exports.signup = async(req,res) => {
             return res.status(500).json(err.message)
     }
     }
-    // exports.signin = (req, res) => {
-    //   User.findOne({ email: req.body.email }).exec(async (error, user) => {
-    //     if (error) return res.status(400).json({ error });
-    //     if (user) {
-    //       const isPassword = await user.authenticate(req.body.password);
-    //       if (isPassword && user.role === "user") {
-    //         // const token = jwt.sign(
-    //         //   { _id: user._id, role: user.role },
-    //         //   process.env.JWT_SECRET,
-    //         //   { expiresIn: "1d" }
-    //         // );
-    //         const token = generateJwtToken(user._id, user.role);
-    //         const { _id, firstName, lastName, email, role, fullName } = user;
-    //         res.status(200).json({
-    //           token,
-    //           user: { _id, firstName, lastName, email, role, fullName },
-    //         });
-    //       } else {
-    //         return res.status(400).json({
-    //           message: "Something went wrong",
-    //         });
-    //       }
-    //     } else {
-    //       return res.status(400).json({ message: "Something went wrong" });
-    //     }
-    //   });
-    // };
+
+    exports.signin =async (req,res) => {
+        const {email,password} = req.body;
+        try{
+            const user = await User.findByCredentials(email,password);
+            if(user.password && user.role ==="user"){
+                const token = await user.generateAuthToken();
+                return res.status(200).json({user,token});
+               }
+               else {
+                return r
+               }
+                
+            } catch(err){
+            return res.status(400).json(err.message);
+        }
+    }
+exports.get_a_user = async(req,res) => {
+        const {id} = req.params;
+        try {
+        const user = await User.findById(id);
+        res.status(200).json({user});
+
+     }catch(err){
+            res.status(404).json({message: "User does not exist"});
+        }
+}
