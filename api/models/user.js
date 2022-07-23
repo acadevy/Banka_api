@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 const validator = require("validator");
 const jwt = require("jsonwebtoken");
 
@@ -16,29 +16,18 @@ const userSchema = new mongoose.Schema({
     trim:true,
     lowercase: true
   },
-  type: {
-    required: true,
-    type: String,
-    unique: true,
-    trim: true
+  image: {
+    type: Buffer
   },
   password: {
     required: true,
     type: String
   },
-  is_admin: {
-    required: true,
-    type: Boolean,
-    default: false
+  role: {
+    type: String,
+    enum:["admin",'user'],
+    default: "user"
   },
-  tokens:[
-    {
-        token: {
-            type: String,
-            required: true
-        }
-    }
-  ],
 }, { timestamps: true });
 
 
@@ -59,12 +48,7 @@ userSchema.pre('save', async function (next) {
 
 
 userSchema.methods.generateAuthToken = async function() {
-  const token = jwt.sign({ _id: this._id.toString() }, process.env.JWT_SECRET);
-
-  this.tokens = this.tokens.concat({ token });
-  await this.save();
-  
-
+  const token = jwt.sign({ _id: this._id.toString(),role: this.role }, process.env.JWT_SECRET);
   return token;
 };
 
