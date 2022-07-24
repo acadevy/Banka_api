@@ -69,3 +69,20 @@ exports.get_all_account = async(req,res) => {
         res.status(400).json(err.message);
     }
 }
+
+exports.get_an_account = async(req,res) =>{
+    const {accountNo} = req.params;
+    try{
+        const account = await Account.find({accountNumber: accountNo});
+        if(req.user.role === "super-admin" || req.user.role === "user"){
+                res.status(200).json(account);
+        }
+        else{
+            res.status(400).json("You are not permitted");
+        }
+        
+
+    } catch(err){
+        res.status(400).json(err.message);
+    }
+}
