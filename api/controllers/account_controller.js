@@ -38,13 +38,34 @@ exports.deactivate_account = async(req,res) => {
             {"$set": {"account.$[element].account_status": status}},
             {new: true, useFindAndModify: false, arrayFilters: [{ "element._id": { $eq: id }}]}
             )
-            console.log(id);
-            res.json(updated_account);
+            res.status(200).json({message: "Status was successfully updated"});
+        }
+        else{
+            res.status(403).json({message: "User is not permitted to perform this operation"});
         }
 
 
     }
     catch(err){
         res.status(500).json(err.message);
+    }
+}
+
+exports.get_all_account = async(req,res) => {
+    const { status } = req.body;
+    try{
+        const accounts = await Account.find({"account.account_status": status});
+        if(accounts.length === 0){
+            res.status(204).json({message: "No account was found"});
+        }
+        else if(req.user.role !== "super-admin"){
+            res.status(403).json({message: "Only admin can perform this task"})
+        }
+        else {
+            res.status(200).json(accounts)
+        }
+
+    }catch(err){
+        res.status(400).json(err.message);
     }
 }
