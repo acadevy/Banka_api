@@ -12,20 +12,27 @@ const accountSchema = mongoose.Schema({
         required: true,
         ref: "User"
          },
-    type: [{
-        type: String,
+    account: [{ 
+        account_type: {
+         type: String,
         enum: ["savings", "current"],
         default: "savings",
-    }],
-    status: {
-        type: String,
-        default: "active"
-    },
-    balance: {
-        type: Number,
-        trim: true
+        },
+        account_balance: {
+            type: Number,
+            default: 0
+        },
+        account_status: {
+            type: String,
+            default: "active"
         }
-});
+    }],
+    created_by: {
+        type: mongoose.Types.ObjectId,
+        required: true,
+        ref: "User"
+    }
+}, {timestamps: true});
 
 
 const Account = mongoose.model('Account', accountSchema);
