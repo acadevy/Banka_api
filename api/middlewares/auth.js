@@ -21,7 +21,7 @@ exports.user_middleware = (req, res, next) => {
     if (req.user.role !== "user") {
       return res.status(400).json({ message: "User access denied" });
     }
-    console.log(req.user);
+    req.user
     next();
   };
 
@@ -33,5 +33,12 @@ exports.admin_middleware = (req, res, next) => {
       }
       next();
     }
+
+exports.super_admin_middleware = (req, res, next) => {
+        if (req.user.role !== "super-admin") {
+            return res.status(400).json({ message: "Super Admin access denied" });
+          }
+          next();
+        }
 
 

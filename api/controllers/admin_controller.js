@@ -3,12 +3,22 @@ const User = require('../models/user');
 
 
 exports.signup = async(req,res) => {
-    const {email} = req.body;
+  const { name, email, password } = req.body;
     try {
     //      check if the user already exist
              const user = await User.findOne({email:email});
             if(!user){
-                const newUser = await User(req.body);
+              const count = await User.estimatedDocumentCount();
+                let role = "admin";
+                if (count === 0) {
+                  role = "super-admin";
+                }
+                const newUser = await User({
+                  name,
+                  email,
+                  password,
+                  role
+                })
                 await newUser.save();
                 const token = await newUser.generateAuthToken();
                 return res.status(201).json({token,newUser});
@@ -16,7 +26,7 @@ exports.signup = async(req,res) => {
             
             } else {
                 return res.status(400).json({
-                    error: 'User already  exist'
+                    error: 'email already  exist'
                 });
             }
             
@@ -30,7 +40,7 @@ exports.signup = async(req,res) => {
         const {email,password} = req.body;
         try{
             const user = await User.findByCredentials(email,password);
-            if(user.password && user.role ==="user"){
+            if(user.password && (user.role ==="admin" || user.role === "super-admin")){
                 const token = await user.generateAuthToken();
                 res.cookie("token", token, { expiresIn: "1d" });
                 return res.status(200).json({user,token});
