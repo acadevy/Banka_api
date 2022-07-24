@@ -55,7 +55,7 @@ exports.get_all_account = async(req,res) => {
     const { status } = req.body;
     try{
         const accounts = await Account.find({"account.account_status": status});
-        if(accounts.length === 0){
+        if(accounts.length === 0 && req.user.role === 'super-admin'){
             res.status(204).json({message: "No account was found"});
         }
         else if(req.user.role !== "super-admin"){
@@ -85,4 +85,24 @@ exports.get_an_account = async(req,res) =>{
     } catch(err){
         res.status(400).json(err.message);
     }
+}
+
+exports.delete_account = async(req,res) => {
+    const {accountNo} = req.params;
+    try{
+        const account = await Account.findOneAndDelete({accountNumber: accountNo});
+        if(req.user.role === "super-admin" && account) {
+                res.status(200).json({message: "Account successfully deleted"});
+        }
+        else if(req.user.role === "super-admin" && !account){
+            res.status(204).json({message: "Account does not exist"})
+        }
+        else if(req.user.role !== "super-admin"){
+            res.status(403).json({message: "Only super-admin are permitted"});
+        }
+        
+    } catch(err){
+        res.status(400).json(err.message);
+    }
+
 }
