@@ -21,8 +21,30 @@ exports.create_account = async(req,res) => {
                 await account.save();
                 res.status(201).json(account);
         }
-        
+        else {
+            res.status(400).json({message: "User already have an account"});
+        }
     } catch(err){
+        res.status(500).json(err.message);
+    }
+}
+
+exports.deactivate_account = async(req,res) => {
+    const {account_id} = req.params;
+    const { status,id }  = req.body;
+    try{
+        if(req.user.role === 'super-admin'){
+            const updated_account = await Account.findByIdAndUpdate(account_id,
+            {"$set": {"account.$[element].account_status": status}},
+            {new: true, useFindAndModify: false, arrayFilters: [{ "element._id": { $eq: id }}]}
+            )
+            console.log(id);
+            res.json(updated_account);
+        }
+
+
+    }
+    catch(err){
         res.status(500).json(err.message);
     }
 }
