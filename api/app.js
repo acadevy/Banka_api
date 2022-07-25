@@ -7,6 +7,7 @@ const path             = require('path');
 const user_router       = require('./routes/user');
 const admin_router      = require('./routes/admin');
 const account_router      = require('./routes/account');
+const transaction_router  = require("./routes/transaction");
 
 /* setup express */
 const app = express();
@@ -25,6 +26,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use('/api/users', user_router);
 app.use('/api/admin', admin_router);
 app.use('/api/account',account_router);
+app.use('/api/transaction', transaction_router);
 
 
 app.use((req, res) => {
