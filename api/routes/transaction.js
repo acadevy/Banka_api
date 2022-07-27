@@ -6,7 +6,7 @@ const { debit_account, credit_account } = require("../controllers/transaction_co
 const { auth }  = require("../middlewares/auth");
 
 
-router.post('/debit/:id',auth,debit_account);
+router.post('/debit',auth,debit_account);
 router.post('/credit/:id', auth, credit_account);
 
 module.exports = router;
