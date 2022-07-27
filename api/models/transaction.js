@@ -21,18 +21,18 @@ const transactionSchema = mongoose.Schema({
     },
 
     oldbalance: {
-        type: Number
-    },
-    newbalance: {
         type: Number,
         default: 0
+    },
+    newbalance: {
+        type: Number
     }
 },{timestamps: true});
 
 
 
 transactionSchema.pre('save', async function (next) {
-    this.oldbalance = this.newbalance
+    this.oldbalance = this.newbalance;
     next();
   });
 

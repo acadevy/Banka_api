@@ -32,10 +32,9 @@ exports.debit_account = async(req,res) => {
             const update_transaction = await Transaction.findOne({accountNumber})
             const updated_amount = update_transaction.oldbalance + parseFloat(amount);
             const updated_account = await Transaction.findByIdAndUpdate(update_transaction._id,
-            {"$set": {newbalance:updated_amount}},{new:true} 
+            {"$set": {newbalance:updated_amount}},{new:true,useFindAndModify: false} 
                 );
-            console.log(updated_account);
-        res.send(updated_account);
+                res.send(updated_account);
     
     }
         catch(err){
