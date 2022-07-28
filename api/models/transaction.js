@@ -15,6 +15,10 @@ const transactionSchema = mongoose.Schema({
         required: true,
     },
 
+    account_type: {
+        type: String,
+        required: true
+    },
     amount: {
         type: Number,
         required: true
@@ -31,10 +35,6 @@ const transactionSchema = mongoose.Schema({
 
 
 
-transactionSchema.pre('save', async function (next) {
-    this.oldbalance = this.newbalance;
-    next();
-  });
 
 const Transaction = mongoose.model('Transaction', transactionSchema);
 

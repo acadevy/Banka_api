@@ -64,7 +64,7 @@ exports.deactivate_account = async(req,res) => {
             {"$set": {"account.$[element].account_status": status}},
             {new: true, useFindAndModify: false, arrayFilters: [{ "element._id": { $eq: id }}]}
             )
-            res.status(200).json({message: "Status was successfully updated"});
+            res.status(200).json({message: "Account status was successfully changed"});
         }
         else{
             res.status(403).json({message: "User is not permitted to perform this operation"});
@@ -80,9 +80,12 @@ exports.deactivate_account = async(req,res) => {
 exports.get_all_account = async(req,res) => {
     const { status } = req.body;
     try{
+        if (status && !(['dormant', 'active'].includes(status))){
+            res.status(400).json({message: "Enter a correct status - dormant or active"})
+        }
         const accounts = await Account.find({"account.account_status": status});
         if(accounts.length === 0 && req.user.role === 'super-admin'){
-            res.status(204).json({message: "No account was found"});
+            res.status(200).json({message: "No account was found"});
         }
         else if(req.user.role !== "super-admin"){
             res.status(403).json({message: "Only admin can perform this task"})
@@ -101,7 +104,7 @@ exports.get_an_account = async(req,res) =>{
     try{
         const account = await Account.find({accountNumber: accountNo});
         if(req.user.role === "super-admin" || req.user.role === "user"){
-                res.status(200).json(account);
+                res.status(200).json({message: "Account was successfully fetched"});
         }
         else{
             res.status(400).json("You are not permitted");
@@ -112,6 +115,14 @@ exports.get_an_account = async(req,res) =>{
         res.status(400).json(err.message);
     }
 }
+
+// implement later
+exports.get_user_by_email = async(req,res)=>{
+
+}
+
+
+
 
 exports.delete_account = async(req,res) => {
     const {accountNo} = req.params;
