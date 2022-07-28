@@ -1,4 +1,5 @@
 const Account = require('../models/Account');
+const User = require('../models/user');
 
 
 // generate an account number
@@ -8,24 +9,49 @@ function account_number() {
 
 exports.create_account = async(req,res) => {
     const { id } = req.params;
+    const { account_type} = req.body.account[0];
+    const { account_balance } = req.body.account[1];
+    const { account_status } = req.body.account[2];
     try {
-        // check if user already have an account
-        const user = await Account.findOne({ id});
-        if(!user){
-                const account = await Account ({
-                    accountNumber: account_number(),
-                    owner: id,
-                    account: req.body,
-                    created_by: req.user._id
-                })
-                await account.save();
-                res.status(201).json(account);
+        // check if the user is already registered
+        const user = await User.findById({_id:id})
+        if(user){
+            // check if user already have an account
+            const account1 = await Account.findOne({owner:id});
+            if(account1 == null){
+            // create new account
+                 const created_account = await Account ({
+                 accountNumber: account_number(),
+                 owner: id,
+                 account: [{account_type,account_balance,account_status}],
+                created_by: req.user._id
+            })
+            await created_account.save();
+            return res.status(201).json(created_account);
+            }
+            const check_account = account1.account;
+            if(check_account.length > 0){
+                if (check_account.length === 2) {
+                    return res.status(400).json({ message:'user already have a savings and current accounts'});
+                  }
+                  if (check_account[0].account_type === account_type) {
+                    return res.status(400).json({ message:`user already have a ${account_type} account`});
+                  }
+                 else{
+                    const updatedPost = await Account.findByIdAndUpdate(account1._id, 
+                        {$push: {"account": {account_type,account_balance,account_status}}}, {new: true, upsert: true});
+                    res.json(updatedPost);
+                 } 
+            }
+                 
         }
+       
         else {
-            res.status(400).json({message: "User already have an account"});
+            return res.status(400).json({message: "User does not exist"});
         }
     } catch(err){
-        res.status(500).json(err.message);
+        console.log(err.message);
+        return res.status(500).json(err.message);
     }
 }
 
