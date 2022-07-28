@@ -117,7 +117,8 @@ exports.get_an_account = async(req,res) =>{
 }
 
 // implement later
-exports.get_user_by_email = async(req,res)=>{
+exports.updated_account_balance = async(req,res)=>{
+    
 
 }
 
