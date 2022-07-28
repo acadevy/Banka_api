@@ -83,3 +83,29 @@ exports.credit_account = async(req,res) => {
         res.status(400).json(err.message);
     }
 }
+
+exports.get_transactions = async(req,res) => {
+    const {accountNumber} = req.body;
+    try{
+        const transactions = await Transaction.findOne({accountNumber});
+        if(transactions){
+            res.status(200).json({message: "Transactions fetched successfully"});
+        }
+        
+    }catch(err){
+        res.status(400).json(err.message);
+    }
+}
+
+exports.get_a_transaction = async(req,res) => {
+    const{transaction_id} = req.params;
+    try{
+        const transaction = await Transaction.findById(transaction_id);
+        if(transaction){
+            res.status(200).json({message: "Transaction fetched successfully"});
+        }
+        
+    }catch(err){
+        res.status(400).json(err.message);
+    }
+}
