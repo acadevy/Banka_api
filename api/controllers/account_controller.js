@@ -118,7 +118,20 @@ exports.get_an_account = async(req,res) =>{
 
 // implement later
 exports.updated_account_balance = async(req,res)=>{
-    
+    const {account_balance,accountNumber} = req.body;
+    const { id } = req.params;
+    try{
+        const account = await Account.findOne({accountNumber});
+            const updated_account = await Account.findOneAndUpdate({accountNumber},
+                {"$set": {"account.$[element].account_balance": account_balance}},
+                {new: true, useFindAndModify: false, arrayFilters: [{ "element._id": { $eq: id }}]}
+                )
+                res.status(200).json({updated_account});
+
+        
+    }catch(err){
+        res.status(400).json(err.message);
+    }
 
 }
 

@@ -7,7 +7,7 @@ const { auth }  = require("../middlewares/auth");
 
 
 router.post('/debit',auth,debit_account);
-router.post('/credit/:id', auth, credit_account);
+router.post('/credit', auth, credit_account);
 router.post('/all', auth,get_transactions);
 router.get('/:transaction_id',auth,get_a_transaction);
 
